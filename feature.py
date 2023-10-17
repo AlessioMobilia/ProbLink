@@ -21,19 +21,36 @@ class ProblinkFeatures(object):
     def _compute_likelihood(self, link_feature, feature_likelihood, is_triplet_feature=False):
         """Compute feature likelihood: probability of feature given link type P(f|C)."""
         count_class = [0.0, 0.0, 0.0]
-        for k, v in link_feature.iteritems():
+        for k, v in link_feature.items():
             if k in self.links.prob:
                 if is_triplet_feature:
                     for adjacent_links_rel in v:
                         feature_likelihood[adjacent_links_rel] = [x + y for x, y in zip(feature_likelihood[adjacent_links_rel], self.links.prob[k])]
-                        count_class = map(lambda x, y: x + y, self.links.prob[k], count_class)
+                        count_class = list(map(lambda x, y: x + y, self.links.prob[k], count_class))
                 else:
                     feature_likelihood[v] = [x + y for x, y in zip(feature_likelihood[v], self.links.prob[k])]
-                    count_class = map(lambda x, y: x + y, self.links.prob[k], count_class)
+                    count_class = list(map(lambda x, y: x + y, self.links.prob[k], count_class))
+
+
 
         for i in feature_likelihood:
             # Laplace smoothing
-            feature_likelihood[i] = [(x+1)/(y+len(feature_likelihood)) for x, y in zip(feature_likelihood[i], count_class)]
+            
+            # Initialize an empty list to store the results
+            smoothed_likelihoods = []
+        
+            # Iterate over the elements in feature_likelihood[i] and count_class simultaneously
+            for x, y in list(zip(feature_likelihood[i], count_class)):
+                # Apply Laplace smoothing formula
+                smoothed_value = (x + 1) / (y + len(feature_likelihood))
+                
+                # Append the smoothed value to the result list
+                smoothed_likelihoods.append(smoothed_value)
+
+            # Assign the result list to feature_likelihood[i]
+            feature_likelihood[i] = smoothed_likelihoods
+
+
 
     def compute_feature_likelihoods(self):
         """Compute likelihoods of all the features"""

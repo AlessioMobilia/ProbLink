@@ -8,7 +8,7 @@ import math
 def compute_class_prior(links):
     """Compute class prior probability: P(C)"""
     p2p_count, p2c_count, c2p_count = 0, 0, 0
-    for link, rel in links.rel.iteritems():
+    for link, rel in links.rel.items():
         if rel == 'p2p':
             p2p_count += 1
         elif rel == 'p2c':
@@ -16,7 +16,7 @@ def compute_class_prior(links):
         else:
             c2p_count += 1
     sum_class = p2p_count + p2c_count + c2p_count
-    return map(lambda x: float(x)/sum_class, (p2p_count, p2c_count, c2p_count))
+    return list( map(lambda x: float(x)/sum_class, (p2p_count, p2c_count, c2p_count)))
 
 
 def naive_bayes(links, features):
@@ -24,7 +24,7 @@ def naive_bayes(links, features):
     output_rel = open('problink_result.txt', 'w')
     inferred_link = set()
     class_prior = compute_class_prior(links)
-    log_class_prior = map(lambda x: math.log10(x), class_prior)
+    log_class_prior = list(map(lambda x: math.log10(x), class_prior))
     tier1s = ['174', '209', '286', '701', '1239', '1299', '2828', '2914', '3257', '3320', '3356', '4436', '5511', '6453', '6461', '6762', '7018', '12956', '3549']
 
     for link in links.prob:
@@ -50,35 +50,36 @@ def naive_bayes(links, features):
         if link in links.triplet_rel:
             triplet_num += len(links.triplet_rel[link])
             for adjacent_links_rel in links.triplet_rel[link]:
-                log_prob = map(lambda x, y: x + y, log_prob, map(lambda x: math.log10(x), features.triplet_feature[adjacent_links_rel]))
+                log_prob =list( map(lambda x, y: x + y, log_prob, list(map(lambda x: math.log10(x), features.triplet_feature[adjacent_links_rel]))))
 
         # non-path feature
         if link in links.nonpath:
-            log_prob = map(lambda x, y: x + triplet_num * y, log_prob, map(lambda x: math.log10(x), features.nonpath_feature[links.nonpath[link]]))
+            log_prob = list(map(lambda x, y: x + triplet_num * y, log_prob, list(map(lambda x: math.log10(x), features.nonpath_feature[links.nonpath[link]]))))
         if reverse_link in links.nonpath:
+            test = links.nonpath[reverse_link] #aggiunta fatta da me inutile
             reverse_prob = features.nonpath_feature[links.nonpath[reverse_link]]
-            reverse_prob = (reverse_prob[0], reverse_prob[2], reverse_prob[1])
-            log_prob = map(lambda x, y: x + triplet_num * y, log_prob, map(lambda x: math.log10(x), reverse_prob))
+            reverse_prob = (reverse_prob[0], reverse_prob[2], reverse_prob[1]) #there is a problem here
+            log_prob =list(map(lambda x, y: x + triplet_num * y, log_prob, list(map(lambda x: math.log10(x), reverse_prob))))
 
         # distance-to-tier1 feature
         if link in links.distance_to_tier1:
-            log_prob = map(lambda x, y: x + triplet_num * y, log_prob, map(lambda x: math.log10(x), features.distance_to_tier1_feature[links.distance_to_tier1[link]]))
+            log_prob = list(map(lambda x, y: x + triplet_num * y, log_prob, list(map(lambda x: math.log10(x), features.distance_to_tier1_feature[links.distance_to_tier1[link]]))))
 
         # VP feature
         if link in links.vp:
-            log_prob = map(lambda x, y: x + triplet_num * y, log_prob, map(lambda x: math.log10(x), features.vp_feature[links.vp[link]]))
+            log_prob = list(map(lambda x, y: x + triplet_num * y, log_prob, list(map(lambda x: math.log10(x), features.vp_feature[links.vp[link]]))))
         if reverse_link in links.vp:
             reverse_prob = features.vp_feature[links.vp[reverse_link]]
             reverse_prob = (reverse_prob[0], reverse_prob[2], reverse_prob[1])
-            log_prob = map(lambda x, y: x + triplet_num * y, log_prob, map(lambda x: math.log10(x), reverse_prob))
+            log_prob = list(map(lambda x, y: x + triplet_num * y, log_prob, list(map(lambda x: math.log10(x), reverse_prob))))
 
         # colocated-IXP feature
         if link in links.colocated_ixp:
-            log_prob = map(lambda x, y: x + triplet_num * y, log_prob, map(lambda x: math.log10(x), features.colocated_ixp_feature[links.colocated_ixp[link]]))
+            log_prob = list(map(lambda x, y: x + triplet_num * y, log_prob, list( map(lambda x: math.log10(x), features.colocated_ixp_feature[links.colocated_ixp[link]]))))
 
         # colocated-facility feature
         if link in links.colocated_facility:
-            log_prob = map(lambda x, y: x + triplet_num * y, log_prob, map(lambda x: math.log10(x), features.colocated_facility_feature[links.colocated_facility[link]]))
+            log_prob = list(map(lambda x, y: x + triplet_num * y, log_prob, list( map(lambda x: math.log10(x), features.colocated_facility_feature[links.colocated_facility[link]]))))
 
         log_p2p, log_p2c, log_c2p = log_prob
         if log_p2p > log_p2c and log_p2p > log_c2p:

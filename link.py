@@ -61,7 +61,7 @@ class Links(object):
                 if line.startswith("# format"):
                     format_counter += 1
 
-        for k, v in org_asn.iteritems():
+        for k, v in org_asn.items():
             sibling_perm = permutations(v, 2)
             for i in sibling_perm:
                 self.siblings.add(i)
@@ -101,7 +101,7 @@ class Links(object):
         """Compute adjacent previous links of all the ASes."""
         for path in self.bgp_paths.forward_paths:
             ASes = path.split('|')
-            for i in xrange(len(ASes) - 2):
+            for i in range(len(ASes) - 2):
                 self.prev_links[(ASes[i+1], ASes[i+2])].add((ASes[i], ASes[i+1]))
 
     def compute_prev_p2p_p2c(self):
@@ -144,7 +144,7 @@ class Links(object):
                 tier1s.remove(tier1_asn)
             else:
                 p = nx.shortest_path_length(g, source=tier1_asn)
-                for k, v in p.iteritems():
+                for k, v in p.items():
                     if k not in shortest_distance or tier1_asn not in shortest_distance[k]:
                         shortest_distance[k][tier1_asn] = v
                         shortest_distance_list[k].append(v)
@@ -180,7 +180,7 @@ class Links(object):
                 else:
                     ixp_dict[ixp].append(AS)
 
-        for k, v in ixp_dict.iteritems():
+        for k, v in ixp_dict.items():
             as_pairs = [(str(p1), str(p2)) for p1 in v for p2 in v if p1 != p2]
             for pair in as_pairs:
                 self.colocated_ixp[(pair[0], pair[1])] += 1
@@ -213,7 +213,7 @@ class Links(object):
                 else:
                     facility_dict[facility].append(AS)
 
-        for k, v in facility_dict.iteritems():
+        for k, v in facility_dict.items():
             as_pairs = [(str(p1), str(p2)) for p1 in v for p2 in v if p1 != p2]
             for pair in as_pairs:
                 self.colocated_facility[(pair[0], pair[1])] += 1
