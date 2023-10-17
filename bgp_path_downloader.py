@@ -13,10 +13,15 @@ def downloader(start_date, duration):
     stream = BGPStream()
     stream.add_interval_filter(base, base + int(duration))
     stream.add_filter('record-type', 'ribs')
+    stream.add_interval_filter(base, base + int(duration))
     stream.start()
+    print('Downloading BGP paths:')
     path_set = set()
     f = open('rib.txt', 'w')
+    count=0
     while True:
+        count +=1
+        print('records:'+str(count), end='         \r')
         rec = stream.get_next_record()
         if rec is None:
             return
