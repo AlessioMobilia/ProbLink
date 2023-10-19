@@ -2,6 +2,8 @@
 import datetime
 import argparse
 from _pybgpstream import BGPStream, BGPRecord
+# Log every 1000 paths.
+LOG_EVERY_N = 10000
 
 
 def downloader(start_date, duration):
@@ -19,11 +21,16 @@ def downloader(start_date, duration):
     path_set = set()
     f = open('rib.txt', 'w')
     count=0
+    print('Downloading Paths...')
+
+
     while True:
         count +=1
-        print('records:'+str(count), end='         \r')
+        if (count % LOG_EVERY_N) == 0:
+            print('records:'+str(count), end='\r')
         rec = stream.get_next_record()
         if rec is None:
+            print('Paths Downloaded')
             return
         if rec.status != "valid":
             continue
@@ -41,6 +48,7 @@ def downloader(start_date, duration):
                     path_set.add(path)
                 elem = rec.get_next_elem()
     f.close()
+    
 
 
 if __name__ == '__main__':
