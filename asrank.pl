@@ -784,7 +784,7 @@ sub python_clique
 
     print PY_OUT "S = x.find_all_cliques()\n";
     print PY_OUT "for i in S:\n";
-    print PY_OUT "  print i\n";
+    print PY_OUT "  print (i)\n";
     close PY_OUT;
 
     my %cs;
