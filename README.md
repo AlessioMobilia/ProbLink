@@ -1,5 +1,8 @@
 # ProbLink
 
+The source code was originally forked from the [Problink Repository](https://github.com/YuchenJin/ProbLink) by Yuchen Jin.
+I am modifying the code for my thesis research only.
+
 ## What is ProbLink?
 ProbLink is a probabilistic AS relationship inference algorithm, which does inference based on key AS-interconnection features derived from stochastically informative signals. Learn more about ProbLink in our [NSDI paper](https://www.usenix.org/conference/nsdi19/presentation/jin).
 
